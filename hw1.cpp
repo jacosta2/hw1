@@ -1,5 +1,6 @@
-//cs335 Spring 2015 hw-1
 //Julia Acosta
+//cs335 Spring 2016 hw-1
+//
 //This program demonstrates the use of OpenGL and XWindows
 //
 //Assignment is to modify this program.
@@ -136,6 +137,7 @@ int main(void)
 		glXSwapBuffers(dpy, win);
 	}
 	cleanupXWindows();
+	cleanup_fonts();
 	return 0;
 }
 
@@ -238,8 +240,8 @@ void check_mouse(XEvent *e, Game *game)
 		savey = e->xbutton.y;
 		if (++n < 10)
 			return;
-        int y = WINDOW_HEIGHT - e->xbutton.y;
-        makeParticle(game, e->xbutton.x, y);
+        //int y = WINDOW_HEIGHT - e->xbutton.y;
+        //makeParticle(game, e->xbutton.x, y);
 
 	}
 }
@@ -247,6 +249,7 @@ void check_mouse(XEvent *e, Game *game)
 int check_keys(XEvent *e, Game *game)
 {
 	//Was there input from the keyboard?
+	int key = XLookupKeysym(&e->xkey, 0);
 	if (e->type == KeyPress) {
 		int key = XLookupKeysym(&e->xkey, 0);
 		if (key == XK_Escape) {
@@ -254,6 +257,12 @@ int check_keys(XEvent *e, Game *game)
 		}
 		//You may check other keys here.
 
+	}
+	switch(key) {
+	    case XK_b:
+		int y = WINDOW_HEIGHT - e->xbutton.y;
+		makeParticle(game, e->xbutton.x, y);
+		break;
 	}
 	return 0;
 }
@@ -280,7 +289,7 @@ void movement(Game *game)
                p->s.center.y <= s->center.y + (s->height) &&
                p->s.center.x >= s->center.x - (s->width) &&
                p->s.center.x <= s->center.x + (s->width)) {
-               p->velocity.y *= -1.0;
+               p->velocity.y *= 0;
            }
 
 	    //check for collision with shapes...
@@ -289,7 +298,7 @@ void movement(Game *game)
                p->s.center.y <= s->center.y + (s->height) &&
                p->s.center.x >= s->center.x - (s->width) &&
                p->s.center.x <= s->center.x + (s->width)) {
-               p->velocity.y *= -1.0;
+               p->velocity.y *= 0;
            }
 
             //check for collision with shapes...
@@ -298,7 +307,7 @@ void movement(Game *game)
                p->s.center.y <= s->center.y + (s->height) &&
                p->s.center.x >= s->center.x - (s->width) &&
                p->s.center.x <= s->center.x + (s->width)) {
-               p->velocity.y *= -1.0;
+               p->velocity.y *= 0;
            }
 
             //check for collision with shapes...
@@ -307,7 +316,7 @@ void movement(Game *game)
                p->s.center.y <= s->center.y + (s->height) &&
                p->s.center.x >= s->center.x - (s->width) &&
                p->s.center.x <= s->center.x + (s->width)) {
-               p->velocity.y *= -1.0;
+               p->velocity.y *= 0;
            }
 
             //check for collision with shapes...
@@ -316,7 +325,7 @@ void movement(Game *game)
                p->s.center.y <= s->center.y + (s->height) &&
                p->s.center.x >= s->center.x - (s->width) &&
                p->s.center.x <= s->center.x + (s->width)) {
-               p->velocity.y *= -1.0;
+               p->velocity.y *= 0;
            }
 
 
@@ -333,10 +342,26 @@ void render(Game *game)
 {
 	float w, h;
 	glClear(GL_COLOR_BUFFER_BIT);
-	//Draw shapes...
+	//Draw shapes..
+	Shape *s;
+	//draw circle
+	glColor3ub(90,140,90);
+        s = &game->box1;
+        glPushMatrix();
+        glTranslatef(s->center.x, s->center.y, s->center.z);
+        w = s->width;
+        h = s->height;
+//	glBegin(GL_LINE_LOOP);
+//		for(int i =0; i <= 300; i++){
+//		double angle = 2 * 3.14 * i / 300;
+//		double x = Math.cos(angle);
+//		double y = Math.sin(angle);
+//		glVertex2d(x,y);
+//		}
+	glEnd(); 
+	glPopMatrix();
 
 	//draw box 1
-	Shape *s;
 	glColor3ub(90,140,90);
 	s = &game->box1;
 	glPushMatrix();
@@ -411,6 +436,47 @@ void render(Game *game)
         glEnd();
         glPopMatrix();
 
+
+	//Print words
+
+        Rect r;
+        int yres = 600;
+
+        r.bot = yres - 50;
+        r.left = 10;
+        r.center = 0;
+        ggprint8b(&r, 20, 0x00FFFFFF, "Waterfall Model");
+
+        //box1
+        r.bot = yres - 165;
+        r.left = 150;
+        r.center = 0;
+        ggprint8b(&r, 16, 0x00ff0000, "Requirements");
+
+        //box2
+        r.bot = yres - 225;
+        r.left = 230;
+        r.center = 0;
+        ggprint8b(&r, 16, 0x00ff0000, "Design");
+
+        //box3
+        r.bot = yres - 285;
+        r.left = 290;
+        r.center = 0;
+        ggprint8b(&r, 16, 0x00ff0000, "Coding");
+
+        //box4
+        r.bot = yres - 345;
+        r.left = 360;
+        r.center = 0;
+        ggprint8b(&r, 16, 0x00ff0000, "Testing");
+
+        //box5
+        r.bot = yres - 405;
+        r.left = 410;
+        r.center = 0;
+        ggprint8b(&r, 16, 0x00ff0000, "Maintenance");
+	
 
 	//draw all particles here
 	glPushMatrix();
