@@ -1,4 +1,5 @@
 //cs335 Spring 2015 hw-1
+//Julia Acosta
 //This program demonstrates the use of OpenGL and XWindows
 //
 //Assignment is to modify this program.
@@ -34,6 +35,9 @@
 #include <X11/Xlib.h>
 #include <X11/keysym.h>
 #include <GL/glx.h>
+extern "C" {
+    #include "fonts.h"
+}
 
 #define WINDOW_WIDTH  800
 #define WINDOW_HEIGHT 600
@@ -64,7 +68,7 @@ struct Particle {
 };
 
 struct Game {
-	Shape box;
+	Shape box1, box2, box3, box4, box5;
 	Particle particle[MAX_PARTICLES];
 	int n;
 };
@@ -89,11 +93,35 @@ int main(void)
 	Game game;
 	game.n=0;
 
-	//declare a box shape
-	game.box.width = 100;
-	game.box.height = 10;
-	game.box.center.x = 120 + 5*65;
-	game.box.center.y = 500 - 5*60;
+	//declare box 1 shape
+	game.box1.width = 100;
+	game.box1.height = 10;
+	game.box1.center.x = 120 + 1*65;
+	game.box1.center.y = 500 - 1*60;
+
+	//declare box 2 shape
+        game.box2.width = 100;
+        game.box2.height = 10;
+        game.box2.center.x = 120 + 2*65;
+        game.box2.center.y = 500 - 2*60;
+
+	//declare box 3 shape
+        game.box3.width = 100;
+        game.box3.height = 10;
+        game.box3.center.x = 120 + 3*65;
+        game.box3.center.y = 500 - 3*60;
+
+	//declare box 4 shape
+        game.box4.width = 100;
+        game.box4.height = 10;
+        game.box4.center.x = 120 + 4*65;
+        game.box4.center.y = 500 - 4*60;
+
+	//declare box 5 shape
+        game.box5.width = 100;
+        game.box5.height = 10;
+        game.box5.center.x = 120 + 5*65;
+        game.box5.center.y = 500 - 5*60;
 
 	//start animation
 	while(!done) {
@@ -115,7 +143,7 @@ void set_title(void)
 {
 	//Set the window title bar.
 	XMapWindow(dpy, win);
-	XStoreName(dpy, win, "335 Lab1   LMB for particle");
+	XStoreName(dpy, win, "335 hw1   LMB for particle");
 }
 
 void cleanupXWindows(void) {
@@ -164,6 +192,10 @@ void init_opengl(void)
 	glOrtho(0, WINDOW_WIDTH, 0, WINDOW_HEIGHT, -1, 1);
 	//Set the screen background color
 	glClearColor(0.1, 0.1, 0.1, 1.0);
+	
+	//Do this to allow fonts
+	glEnable(GL_TEXTURE_2D);
+	initialize_fonts();
 }
 
 void makeParticle(Game *game, int x, int y) {
@@ -174,7 +206,7 @@ void makeParticle(Game *game, int x, int y) {
 	Particle *p = &game->particle[game->n];
 	p->s.center.x = x;
 	p->s.center.y = y;
-	p->velocity.y = -4.0;
+	p->velocity.y = -1.0;
 	p->velocity.x =  1.0;
 	game->n++;
 }
@@ -243,13 +275,50 @@ void movement(Game *game)
 
 	    //check for collision with shapes...
 	    Shape *s;
-        s = &game->box;
+        s = &game->box1;
            if (p->s.center.y >= s->center.y - (s->height) &&
                p->s.center.y <= s->center.y + (s->height) &&
                p->s.center.x >= s->center.x - (s->width) &&
                p->s.center.x <= s->center.x + (s->width)) {
                p->velocity.y *= -1.0;
            }
+
+	    //check for collision with shapes...
+        s = &game->box2;
+           if (p->s.center.y >= s->center.y - (s->height) &&
+               p->s.center.y <= s->center.y + (s->height) &&
+               p->s.center.x >= s->center.x - (s->width) &&
+               p->s.center.x <= s->center.x + (s->width)) {
+               p->velocity.y *= -1.0;
+           }
+
+            //check for collision with shapes...
+        s = &game->box3;
+           if (p->s.center.y >= s->center.y - (s->height) &&
+               p->s.center.y <= s->center.y + (s->height) &&
+               p->s.center.x >= s->center.x - (s->width) &&
+               p->s.center.x <= s->center.x + (s->width)) {
+               p->velocity.y *= -1.0;
+           }
+
+            //check for collision with shapes...
+        s = &game->box4;
+           if (p->s.center.y >= s->center.y - (s->height) &&
+               p->s.center.y <= s->center.y + (s->height) &&
+               p->s.center.x >= s->center.x - (s->width) &&
+               p->s.center.x <= s->center.x + (s->width)) {
+               p->velocity.y *= -1.0;
+           }
+
+            //check for collision with shapes...
+        s = &game->box5;
+           if (p->s.center.y >= s->center.y - (s->height) &&
+               p->s.center.y <= s->center.y + (s->height) &&
+               p->s.center.x >= s->center.x - (s->width) &&
+               p->s.center.x <= s->center.x + (s->width)) {
+               p->velocity.y *= -1.0;
+           }
+
 
 	    //check for off-screen
 	    if (p->s.center.y < 0.0) {
@@ -266,10 +335,10 @@ void render(Game *game)
 	glClear(GL_COLOR_BUFFER_BIT);
 	//Draw shapes...
 
-	//draw box
+	//draw box 1
 	Shape *s;
 	glColor3ub(90,140,90);
-	s = &game->box;
+	s = &game->box1;
 	glPushMatrix();
 	glTranslatef(s->center.x, s->center.y, s->center.z);
 	w = s->width;
@@ -281,6 +350,67 @@ void render(Game *game)
 		glVertex2i( w,-h);
 	glEnd();
 	glPopMatrix();
+
+	//draw box 2
+        glColor3ub(90,140,90);
+        s = &game->box2;
+        glPushMatrix();
+        glTranslatef(s->center.x, s->center.y, s->center.z);
+        w = s->width;
+        h = s->height;
+        glBegin(GL_QUADS);
+                glVertex2i(-w,-h);
+                glVertex2i(-w, h);
+                glVertex2i( w, h);
+                glVertex2i( w,-h);
+        glEnd();
+        glPopMatrix();
+
+	//draw box 3
+        glColor3ub(90,140,90);
+        s = &game->box3;
+        glPushMatrix();
+        glTranslatef(s->center.x, s->center.y, s->center.z);
+        w = s->width;
+        h = s->height;
+        glBegin(GL_QUADS);
+                glVertex2i(-w,-h);
+                glVertex2i(-w, h);
+                glVertex2i( w, h);
+                glVertex2i( w,-h);
+        glEnd();
+        glPopMatrix();
+
+	//draw box 4
+        glColor3ub(90,140,90);
+        s = &game->box4;
+        glPushMatrix();
+        glTranslatef(s->center.x, s->center.y, s->center.z);
+        w = s->width;
+        h = s->height;
+        glBegin(GL_QUADS);
+                glVertex2i(-w,-h);
+                glVertex2i(-w, h);
+                glVertex2i( w, h);
+                glVertex2i( w,-h);
+        glEnd();
+        glPopMatrix();
+
+	//draw box 5
+        glColor3ub(90,140,90);
+        s = &game->box5;
+        glPushMatrix();
+        glTranslatef(s->center.x, s->center.y, s->center.z);
+        w = s->width;
+        h = s->height;
+        glBegin(GL_QUADS);
+                glVertex2i(-w,-h);
+                glVertex2i(-w, h);
+                glVertex2i( w, h);
+                glVertex2i( w,-h);
+        glEnd();
+        glPopMatrix();
+
 
 	//draw all particles here
 	glPushMatrix();
