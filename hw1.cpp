@@ -36,6 +36,7 @@
 #include <X11/Xlib.h>
 #include <X11/keysym.h>
 #include <GL/glx.h>
+#include <math.h>
 extern "C" {
     #include "fonts.h"
 }
@@ -69,7 +70,7 @@ struct Particle {
 };
 
 struct Game {
-	Shape box1, box2, box3, box4, box5;
+	Shape circle, box1, box2, box3, box4, box5;
 	Particle particle[MAX_PARTICLES];
 	int n;
 };
@@ -94,6 +95,12 @@ int main(void)
 	Game game;
 	game.n=0;
 
+    //decalre circle shape
+    game.circle.width = 500;
+    game.circle.height = 50;
+    game.circle.center.x = 120 + 6*65;
+    game.circle.center.y = 500 - 6*60;
+
 	//declare box 1 shape
 	game.box1.width = 100;
 	game.box1.height = 10;
@@ -101,28 +108,28 @@ int main(void)
 	game.box1.center.y = 500 - 1*60;
 
 	//declare box 2 shape
-        game.box2.width = 100;
-        game.box2.height = 10;
-        game.box2.center.x = 120 + 2*65;
-        game.box2.center.y = 500 - 2*60;
+    game.box2.width = 100;
+    game.box2.height = 10;
+    game.box2.center.x = 120 + 2*65;
+    game.box2.center.y = 500 - 2*60;
 
 	//declare box 3 shape
-        game.box3.width = 100;
-        game.box3.height = 10;
-        game.box3.center.x = 120 + 3*65;
-        game.box3.center.y = 500 - 3*60;
+    game.box3.width = 100;
+    game.box3.height = 10;
+    game.box3.center.x = 120 + 3*65;
+    game.box3.center.y = 500 - 3*60;
 
 	//declare box 4 shape
-        game.box4.width = 100;
-        game.box4.height = 10;
-        game.box4.center.x = 120 + 4*65;
-        game.box4.center.y = 500 - 4*60;
+    game.box4.width = 100;
+    game.box4.height = 10;
+    game.box4.center.x = 120 + 4*65;
+    game.box4.center.y = 500 - 4*60;
 
 	//declare box 5 shape
-        game.box5.width = 100;
-        game.box5.height = 10;
-        game.box5.center.x = 120 + 5*65;
-        game.box5.center.y = 500 - 5*60;
+    game.box5.width = 100;
+    game.box5.height = 10;
+    game.box5.center.x = 120 + 5*65;
+    game.box5.center.y = 500 - 5*60;
 
 	//start animation
 	while(!done) {
@@ -260,8 +267,13 @@ int check_keys(XEvent *e, Game *game)
 	}
 	switch(key) {
 	    case XK_b:
-		int y = WINDOW_HEIGHT - e->xbutton.y;
-		makeParticle(game, e->xbutton.x, y);
+		int showWater = 0;
+		showWater ^= 1;
+		if (showWater) {
+		    makeParticle(game, 180, 550);
+		}
+		//int y = WINDOW_HEIGHT - e->xbutton.y;
+		//makeParticle(game, e->xbutton.x, y);
 		break;
 	}
 	return 0;
@@ -301,7 +313,7 @@ void movement(Game *game)
                p->velocity.y *= 0;
            }
 
-            //check for collision with shapes...
+        //check for collision with shapes...
         s = &game->box3;
            if (p->s.center.y >= s->center.y - (s->height) &&
                p->s.center.y <= s->center.y + (s->height) &&
@@ -310,7 +322,7 @@ void movement(Game *game)
                p->velocity.y *= 0;
            }
 
-            //check for collision with shapes...
+        //check for collision with shapes...
         s = &game->box4;
            if (p->s.center.y >= s->center.y - (s->height) &&
                p->s.center.y <= s->center.y + (s->height) &&
@@ -319,7 +331,7 @@ void movement(Game *game)
                p->velocity.y *= 0;
            }
 
-            //check for collision with shapes...
+        //check for collision with shapes...
         s = &game->box5;
            if (p->s.center.y >= s->center.y - (s->height) &&
                p->s.center.y <= s->center.y + (s->height) &&
@@ -345,24 +357,29 @@ void render(Game *game)
 	//Draw shapes..
 	Shape *s;
 	//draw circle
-	glColor3ub(90,140,90);
-        s = &game->box1;
-        glPushMatrix();
-        glTranslatef(s->center.x, s->center.y, s->center.z);
-        w = s->width;
-        h = s->height;
-//	glBegin(GL_LINE_LOOP);
-//		for(int i =0; i <= 300; i++){
-//		double angle = 2 * 3.14 * i / 300;
-//		double x = Math.cos(angle);
-//		double y = Math.sin(angle);
-//		glVertex2d(x,y);
-//		}
+	glColor3ub(250,250,250);
+    s = &game->circle;
+    glPushMatrix();
+    glTranslatef(s->center.x, s->center.y, s->center.z);
+    w = s->width;
+    h = s->height;
+//    glBegin(GL_QUADS);
+//        glVertex2i(-w,-h);
+//        glVertex2i(-w, h);
+//        glVertex2i( w, h);
+//        glVertex2i( w,-h);
+	glBegin(GL_LINE_LOOP);
+		for(int i =0; i <= 1000; i++){
+		double angle = 2 * 3.14 * i / 1000;
+		double x = cos(angle);
+		double y = sin(angle);
+		glVertex2d(x,y);
+		}
 	glEnd(); 
 	glPopMatrix();
 
 	//draw box 1
-	glColor3ub(90,140,90);
+	glColor3ub(250,250,250);
 	s = &game->box1;
 	glPushMatrix();
 	glTranslatef(s->center.x, s->center.y, s->center.z);
@@ -377,105 +394,105 @@ void render(Game *game)
 	glPopMatrix();
 
 	//draw box 2
-        glColor3ub(90,140,90);
-        s = &game->box2;
-        glPushMatrix();
-        glTranslatef(s->center.x, s->center.y, s->center.z);
-        w = s->width;
-        h = s->height;
-        glBegin(GL_QUADS);
-                glVertex2i(-w,-h);
-                glVertex2i(-w, h);
-                glVertex2i( w, h);
-                glVertex2i( w,-h);
-        glEnd();
-        glPopMatrix();
+    glColor3ub(250,250,250);
+    s = &game->box2;
+    glPushMatrix();
+    glTranslatef(s->center.x, s->center.y, s->center.z);
+    w = s->width;
+    h = s->height;
+    glBegin(GL_QUADS);
+        glVertex2i(-w,-h);
+        glVertex2i(-w, h);
+        glVertex2i( w, h);
+        glVertex2i( w,-h);
+    glEnd();
+    glPopMatrix();
 
 	//draw box 3
-        glColor3ub(90,140,90);
-        s = &game->box3;
-        glPushMatrix();
-        glTranslatef(s->center.x, s->center.y, s->center.z);
-        w = s->width;
-        h = s->height;
-        glBegin(GL_QUADS);
-                glVertex2i(-w,-h);
-                glVertex2i(-w, h);
-                glVertex2i( w, h);
-                glVertex2i( w,-h);
-        glEnd();
-        glPopMatrix();
+    glColor3ub(250,250,250);
+    s = &game->box3;
+    glPushMatrix();
+    glTranslatef(s->center.x, s->center.y, s->center.z);
+    w = s->width;
+    h = s->height;
+    glBegin(GL_QUADS);
+        glVertex2i(-w,-h);
+        glVertex2i(-w, h);
+        glVertex2i( w, h);
+        glVertex2i( w,-h);
+    glEnd();
+    glPopMatrix();
 
 	//draw box 4
-        glColor3ub(90,140,90);
-        s = &game->box4;
-        glPushMatrix();
-        glTranslatef(s->center.x, s->center.y, s->center.z);
-        w = s->width;
-        h = s->height;
-        glBegin(GL_QUADS);
-                glVertex2i(-w,-h);
-                glVertex2i(-w, h);
-                glVertex2i( w, h);
-                glVertex2i( w,-h);
-        glEnd();
-        glPopMatrix();
+    glColor3ub(250,250,250);
+    s = &game->box4;
+    glPushMatrix();
+    glTranslatef(s->center.x, s->center.y, s->center.z);
+    w = s->width;
+    h = s->height;
+    glBegin(GL_QUADS);
+        glVertex2i(-w,-h);
+        glVertex2i(-w, h);
+        glVertex2i( w, h);
+        glVertex2i( w,-h);
+    glEnd();
+    glPopMatrix();
 
 	//draw box 5
-        glColor3ub(90,140,90);
-        s = &game->box5;
-        glPushMatrix();
-        glTranslatef(s->center.x, s->center.y, s->center.z);
-        w = s->width;
-        h = s->height;
-        glBegin(GL_QUADS);
-                glVertex2i(-w,-h);
-                glVertex2i(-w, h);
-                glVertex2i( w, h);
-                glVertex2i( w,-h);
-        glEnd();
-        glPopMatrix();
+    glColor3ub(250,250,250);
+    s = &game->box5;
+    glPushMatrix();
+    glTranslatef(s->center.x, s->center.y, s->center.z);
+    w = s->width;
+    h = s->height;
+    glBegin(GL_QUADS);
+        glVertex2i(-w,-h);
+        glVertex2i(-w, h);
+        glVertex2i( w, h);
+        glVertex2i( w,-h);
+    glEnd();
+    glPopMatrix();
 
 
 	//Print words
 
-        Rect r;
-        int yres = 600;
+    Rect r;
+    int yres = 600;
 
-        r.bot = yres - 50;
-        r.left = 10;
-        r.center = 0;
-        ggprint8b(&r, 20, 0x00FFFFFF, "Waterfall Model");
+    r.bot = yres - 50;
+    r.left = 10;
+    r.center = 0;
+    ggprint8b(&r, 20, 0x0063e5e7, "Waterfall Model");
 
-        //box1
-        r.bot = yres - 165;
-        r.left = 150;
-        r.center = 0;
-        ggprint8b(&r, 16, 0x00ff0000, "Requirements");
+    //box1
+    r.bot = yres - 165;
+    r.left = 150;
+    r.center = 0;
+    ggprint8b(&r, 16, 0x000000ff, "Requirements");
 
-        //box2
-        r.bot = yres - 225;
-        r.left = 230;
-        r.center = 0;
-        ggprint8b(&r, 16, 0x00ff0000, "Design");
+    //box2
+    r.bot = yres - 225;
+    r.left = 230;
+    r.center = 0;
+    ggprint8b(&r, 16, 0x000000ff, "Design");
 
-        //box3
-        r.bot = yres - 285;
-        r.left = 290;
-        r.center = 0;
-        ggprint8b(&r, 16, 0x00ff0000, "Coding");
+    //box3
+    r.bot = yres - 285;
+    r.left = 290;
+    r.center = 0;
+    ggprint8b(&r, 16, 0x000000ff, "Coding");
 
-        //box4
-        r.bot = yres - 345;
-        r.left = 360;
-        r.center = 0;
-        ggprint8b(&r, 16, 0x00ff0000, "Testing");
+    //box4
+    r.bot = yres - 345;
+    r.left = 360;
+    r.center = 0;
+    ggprint8b(&r, 16, 0x000000ff, "Testing");
 
-        //box5
-        r.bot = yres - 405;
-        r.left = 410;
-        r.center = 0;
-        ggprint8b(&r, 16, 0x00ff0000, "Maintenance");
+    //box5
+    r.bot = yres - 405;
+    r.left = 410;
+    r.center = 0;
+    ggprint8b(&r, 16, 0x000000ff, "Maintenance");
 	
 
 	//draw all particles here
