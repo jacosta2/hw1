@@ -44,7 +44,7 @@ extern "C" {
 #define WINDOW_WIDTH  800
 #define WINDOW_HEIGHT 600
 
-#define MAX_PARTICLES 500
+#define MAX_PARTICLES 6000
 #define GRAVITY 0.1
 
 //X Windows variables
@@ -95,11 +95,10 @@ int main(void)
 	Game game;
 	game.n=0;
 
-    //decalre circle shape
-    game.circle.width = 500;
-    game.circle.height = 50;
-    game.circle.center.x = 120 + 6*65;
-    game.circle.center.y = 500 - 6*60;
+    	//decalre circle shape
+    	game.circle.radius = 0.50;
+    	game.circle.center.x = 120 + 8*65;
+    	game.circle.center.y = 500 - 7*60;
 
 	//declare box 1 shape
 	game.box1.width = 100;
@@ -108,28 +107,28 @@ int main(void)
 	game.box1.center.y = 500 - 1*60;
 
 	//declare box 2 shape
-    game.box2.width = 100;
-    game.box2.height = 10;
-    game.box2.center.x = 120 + 2*65;
-    game.box2.center.y = 500 - 2*60;
+    	game.box2.width = 100;
+    	game.box2.height = 10;
+    	game.box2.center.x = 120 + 2*65;
+    	game.box2.center.y = 500 - 2*60;
 
 	//declare box 3 shape
-    game.box3.width = 100;
-    game.box3.height = 10;
-    game.box3.center.x = 120 + 3*65;
-    game.box3.center.y = 500 - 3*60;
+    	game.box3.width = 100;
+    	game.box3.height = 10;
+    	game.box3.center.x = 120 + 3*65;
+    	game.box3.center.y = 500 - 3*60;
 
 	//declare box 4 shape
-    game.box4.width = 100;
-    game.box4.height = 10;
-    game.box4.center.x = 120 + 4*65;
-    game.box4.center.y = 500 - 4*60;
+    	game.box4.width = 100;
+    	game.box4.height = 10;
+    	game.box4.center.x = 120 + 4*65;
+    	game.box4.center.y = 500 - 4*60;
 
 	//declare box 5 shape
-    game.box5.width = 100;
-    game.box5.height = 10;
-    game.box5.center.x = 120 + 5*65;
-    game.box5.center.y = 500 - 5*60;
+    	game.box5.width = 100;
+    	game.box5.height = 10;
+    	game.box5.center.x = 120 + 5*65;
+    	game.box5.center.y = 500 - 5*60;
 
 	//start animation
 	while(!done) {
@@ -271,9 +270,15 @@ int check_keys(XEvent *e, Game *game)
 		showWater ^= 1;
 		if (showWater) {
 		    makeParticle(game, 180, 550);
+		    makeParticle(game, 185, 550);
+		    makeParticle(game, 175, 550);
+		    makeParticle(game, 180, 555);
+		    makeParticle(game, 180, 545);
+		    makeParticle(game, 175, 555);
+		    makeParticle(game, 175, 545);
+		    makeParticle(game, 185, 555);
+		    makeParticle(game, 185, 545);
 		}
-		//int y = WINDOW_HEIGHT - e->xbutton.y;
-		//makeParticle(game, e->xbutton.x, y);
 		break;
 	}
 	return 0;
@@ -294,8 +299,8 @@ void movement(Game *game)
         //gravity
         p->velocity.y -= 0.2;
 
-	    //check for collision with shapes...
-	    Shape *s;
+	//check for collision with shapes...
+	Shape *s;
         s = &game->box1;
            if (p->s.center.y >= s->center.y - (s->height) &&
                p->s.center.y <= s->center.y + (s->height) &&
@@ -304,7 +309,7 @@ void movement(Game *game)
                p->velocity.y *= 0;
            }
 
-	    //check for collision with shapes...
+	//check for collision with shapes...
         s = &game->box2;
            if (p->s.center.y >= s->center.y - (s->height) &&
                p->s.center.y <= s->center.y + (s->height) &&
@@ -358,21 +363,14 @@ void render(Game *game)
 	Shape *s;
 	//draw circle
 	glColor3ub(250,250,250);
-    s = &game->circle;
-    glPushMatrix();
-    glTranslatef(s->center.x, s->center.y, s->center.z);
-    w = s->width;
-    h = s->height;
-//    glBegin(GL_QUADS);
-//        glVertex2i(-w,-h);
-//        glVertex2i(-w, h);
-//        glVertex2i( w, h);
-//        glVertex2i( w,-h);
+    	s = &game->circle;
+    	glPushMatrix();
+    	//glTranslatef(s->center.x, s->center.y, s->center.z);
 	glBegin(GL_LINE_LOOP);
-		for(int i =0; i <= 1000; i++){
-		double angle = 2 * 3.14 * i / 1000;
-		double x = cos(angle);
-		double y = sin(angle);
+		for(int i =0; i <= 200; i++){
+			double angle = 2 * 3.14 * i / 200;
+			double x = cos(angle);
+			double y = sin(angle);
 		glVertex2d(x,y);
 		}
 	glEnd(); 
